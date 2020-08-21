@@ -139,28 +139,32 @@ pub unsafe fn __aeabi_ldivmod() {
 }
 
 // FIXME: The `*4` and `*8` variants should be defined as aliases.
-
-#[cfg(not(target_os = "ios"))]
-#[cfg_attr(not(feature = "mangled-names"), no_mangle)]
-#[cfg_attr(thumb, linkage = "weak")]
-pub unsafe extern "aapcs" fn __aeabi_memcpy(dest: *mut u8, src: *const u8, n: usize) {
-    ::mem::memcpy(dest, src, n);
+extern "C" {
+    // optimized memcpy using assembly
+    fn memcpy(dest: *mut u8, src: *const u8, n: usize);
 }
 
 #[cfg(not(target_os = "ios"))]
 #[cfg_attr(not(feature = "mangled-names"), no_mangle)]
 #[cfg_attr(thumb, linkage = "weak")]
-pub unsafe extern "aapcs" fn __aeabi_memcpy4(dest: *mut u8, src: *const u8, mut n: usize) {
-    // We are guaranteed 4-alignment, so accessing at u32 is okay.
-    let mut dest = dest as *mut u32;
-    let mut src = src as *mut u32;
+pub unsafe extern "aapcs" fn __aeabi_memcpy(dest: *mut u8, src: *const u8, n: usize) {
+    memcpy(dest, src, n);
+}
 
-    while n >= 4 {
-        *dest = *src;
-        dest = dest.offset(1);
-        src = src.offset(1);
-        n -= 4;
-    }
+#[cfg(not(target_os = "ios"))]
+#[cfg_attr(not(feature = "mangled-names"), no_mangle)]
+#[cfg_attr(thumb, linkage = "weak")]
+pub unsafe extern "aapcs" fn __aeabi_memcpy4(dest: *mut u8, src: *const u8, n: usize) {
+    // We are guaranteed 4-alignment, so accessing at u32 is okay.
+    // let mut dest = dest as *mut u32;
+    // let mut src = src as *mut u32;
+
+    // while n >= 4 {
+    //     *dest = *src;
+    //     dest = dest.offset(1);
+    //     src = src.offset(1);
+    //     n -= 4;
+    // }
 
     __aeabi_memcpy(dest as *mut u8, src as *const u8, n);
 }
