@@ -91,7 +91,7 @@ fn compile_memcpy() {
         "memcpy.S",
     ];
 
-    let root = Path::new("asm");
+    let root = Path::new("src/asm");
     for src in sources {
         println!("cargo:rerun-if-changed={}", src);
         cfg.file(root.join(src));
