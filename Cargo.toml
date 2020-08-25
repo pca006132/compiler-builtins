@@ -42,7 +42,7 @@ default = ["compiler-builtins"]
 
 # Enable compilation of C code in compiler-rt, filling in some more optimized
 # implementations and also filling in unimplemented intrinsics
-# c = ["cc"]
+c = []
 
 # Flag this library as the unstable compiler-builtins lib
 compiler-builtins = []
